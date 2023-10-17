@@ -68,7 +68,7 @@ private:
     Vector1dSizeT size{};
     Vector2dEdge edges{};
 
-    size_t num_of_vertices{}; // Asymptotic: O(\alpha (N)), where \alpha - Ackerman func <= 4 (almost every time).
+    size_t num_of_vertices{}; // Asymptotic: O(\alpha (N)), where \alpha - reverse Ackerman func <= 4 (almost every time).
 
     Vector1dSizeT t_in_{};
     Vector1dSizeT t_up_{};

@@ -4,6 +4,7 @@ from collections import defaultdict
 
 verbose = True
 
+
 def propagation(cities):
     delta = len(cities)
     while delta > 0:
