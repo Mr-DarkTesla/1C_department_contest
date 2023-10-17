@@ -153,7 +153,7 @@ public:
             std::cout << "Amount of connected components: " << graph.num_of_comps << std::endl;
             std::cout << "Amount of bridges: " << bridge_and_connections.first << std::endl;
             std::cout << "Amount of cut-points: " << bridge_and_connections.second << std::endl;
-            std::cout << "Needed starting infections " << 1 + graph.num_of_comps +
+            std::cout << "Lower bound of starting infections " << 1 + graph.num_of_comps +
             bridge_and_connections.first + bridge_and_connections.second << std::endl;
         } else {
             std::cout << "" << 1 + graph.num_of_comps +
