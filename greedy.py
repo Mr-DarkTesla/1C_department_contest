@@ -4,12 +4,14 @@ from collections import defaultdict
 
 verbose = True
 
+
 def propagation(cities, new):
+    new_set = set(graph[new])
     delta = len(cities)
     while delta > 0:
         start = len(cities)
         for left in cities:
-            for city in set(graph[left]).intersection(set(graph[new])):
+            for city in new_set.intersection(set(graph[left])):
                 if city not in cities:
                     cities.append(city)
                     if verbose:
