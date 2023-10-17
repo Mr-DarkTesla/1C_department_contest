@@ -4,13 +4,12 @@ from collections import defaultdict
 
 verbose = True
 
-
-def propagation(cities):
+def propagation(cities, new):
     delta = len(cities)
     while delta > 0:
         start = len(cities)
-        for (left, right) in combinations(cities, 2):
-            for city in set(graph[left]).intersection(set(graph[right])):
+        for left in cities:
+            for city in set(graph[left]).intersection(set(graph[new])):
                 if city not in cities:
                     cities.append(city)
                     if verbose:
@@ -34,14 +33,14 @@ initial = []
 
 ans = 0
 while True:
-    infested = propagation(infested)
     if len(infested) >= num_of_vertices - 1:
         break
     next = min(set(vertices).difference(set(infested)))
-    infested.append(next)
     initial.append(next)
     if verbose:
         print(f"Add starting: {next}")
+    infested = propagation(infested, next)
+    infested.append(next)
     ans += 1
 if verbose:
     print(f"Total count: {ans}")
