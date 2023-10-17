@@ -3,6 +3,8 @@
 #include <utility>
 #include <vector>
 
+#define VERBOSE true
+
 typedef std::pair<size_t, size_t> Edge;
 
 typedef std::vector<bool> Vector1dBool;
@@ -22,6 +24,7 @@ class Graph {
 public:
     size_t num_of_comps{};
     Vector1dSizeT bridges{};
+    Vector1dSizeT connections{};
 
     explicit Graph(size_t input_num_of_vertices) {
         num_of_vertices = input_num_of_vertices + 1;
@@ -36,8 +39,8 @@ public:
     void Connect(const Vector1dEdge& given_edges) {
         edges = Vector2dEdge(num_of_vertices, Vector1dEdge(0));
         for (auto edge : given_edges) {
-            edges[edge.first].push_back(edge);
-            edges[edge.second].push_back(edge);
+            edges[edge.first].emplace_back(edge.first, edge.second);
+            edges[edge.second].emplace_back(edge.second, edge.first);
             if (!SameRoot(edge.first, edge.second)) {
                 Merge(edge.first, edge.second);
                 num_of_comps--;
@@ -46,7 +49,7 @@ public:
     }
 
     // Asymptotic: O(N + M), where N - vertices, M - edges.
-    size_t GetNumOfBridges() {
+    Edge GetNumOfBridgesAndConnections() {
         t_in_.resize(num_of_vertices);
         t_up_.resize(num_of_vertices);
         used_.resize(num_of_vertices, false);
@@ -57,7 +60,7 @@ public:
                 Dfs(i, 0, time);
             }
         }
-        return bridges.size() / 2;
+        return Edge(bridges.size() / 2, connections.size() / 2);
     }
 
 private:
@@ -111,14 +114,18 @@ private:
                 if (t_up_[next] > t_in_[cur]) {
                     Bridge(cur, next, edge_idx);
                 }
+                if (t_up_[next] >= t_in_[cur]) {
+                    auto it = std::upper_bound(connections.cbegin(), connections.cend(), cur);
+                    connections.insert(it, cur);
+                }
             }
         }
     }
 
     void Bridge(size_t from, size_t to, size_t edge_idx) {
         for (Edge next_pair : edges[from]) {
-            size_t neighbor = next_pair.first;
-            size_t index = next_pair.second;
+            size_t neighbor = next_pair.second;
+            size_t index = next_pair.first;
             if (neighbor == to && index != edge_idx) {
                 return;
             }
@@ -141,11 +148,17 @@ public:
     void Process() {
         Graph graph(num_of_vert);
         graph.Connect(input_edges);
-        std::cout << "Amount of connected components: " << graph.num_of_comps << std::endl;
-        std::cout << "Amount of bridges: " << graph.GetNumOfBridges() << std::endl;
-//        for (auto bridge : graph.bridges) {
-//            std::cout << input_edges[bridge].first << " -- " << input_edges[bridge].second << std::endl;
-//        }
+        Edge bridge_and_connections = graph.GetNumOfBridgesAndConnections();
+        if (VERBOSE) {
+            std::cout << "Amount of connected components: " << graph.num_of_comps << std::endl;
+            std::cout << "Amount of bridges: " << bridge_and_connections.first << std::endl;
+            std::cout << "Amount of cut-points: " << bridge_and_connections.second << std::endl;
+            std::cout << "Needed starting infections " << 1 + graph.num_of_comps +
+            bridge_and_connections.first + bridge_and_connections.second << std::endl;
+        } else {
+            std::cout << "" << 1 + graph.num_of_comps +
+            bridge_and_connections.first + bridge_and_connections.second << std::endl;
+        }
     }
 
     size_t num_of_edges_{};
